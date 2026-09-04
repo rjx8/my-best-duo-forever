@@ -64,11 +64,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(
-                circle,
-                rgba(86, 56, 145, 0.13),
-                transparent 65%
-            );
+            background: radial-gradient(circle, rgba(86, 56, 145, 0.13), transparent 65%);
             filter: blur(35px);
             animation: glow 8s ease-in-out infinite alternate;
             pointer-events: none;
@@ -196,6 +192,7 @@
             pointer-events: none;
         }
 
+
         /* =========================
            شاشة الهدية
         ========================= */
@@ -211,18 +208,19 @@
 
             background:
                 radial-gradient(
-                    circle at 50% 35%,
-                    rgba(70, 70, 80, 0.16),
+                    ellipse at 50% 38%,
+                    rgba(95, 96, 105, 0.16),
                     transparent 45%
                 ),
                 linear-gradient(
                     145deg,
-                    #16171b 0%,
-                    #101115 45%,
+                    #191a1e 0%,
+                    #121318 45%,
                     #08090c 100%
                 );
 
             color: white;
+
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -231,46 +229,59 @@
                 sans-serif;
 
             overflow: hidden;
-            padding: 34px 20px 0;
+
+            padding: 25px 20px 0;
         }
 
-        /* إطار الشاشة */
         .gift-screen::before {
             content: "";
             position: absolute;
             inset: 16px;
+
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
+
             pointer-events: none;
         }
 
+
         /* =========================
-           منطقة الصورة
+           صندوق الهدية
         ========================= */
 
         .scratch-wrapper {
             position: relative;
 
-            width: min(86vw, 390px);
-            aspect-ratio: 1 / 1;
+            /*
+             * مستطيل واضح بدل المربع
+             */
+            width: min(90vw, 500px);
+            height: min(58vh, 360px);
 
-            margin-top: 5vh;
+            margin-top: 10vh;
 
-            border-radius: 18px;
+            border-radius: 20px;
+
             overflow: hidden;
 
-            background: #111217;
+            background: #101116;
 
             box-shadow:
-                0 25px 60px rgba(0, 0, 0, 0.55),
-                0 0 0 1px rgba(255, 255, 255, 0.08);
+                0 30px 70px rgba(0, 0, 0, 0.62),
+                0 0 0 1px rgba(255, 255, 255, 0.09),
+                inset 0 0 30px rgba(255, 255, 255, 0.025);
 
             user-select: none;
             -webkit-user-select: none;
+
             touch-action: none;
         }
 
-        /* الصورة الأصلية */
+
+        /* =========================
+           الصورة التي تظهر تحت المسح
+        ========================= */
+
         .gift-image {
             position: absolute;
             inset: 0;
@@ -278,24 +289,35 @@
             width: 100%;
             height: 100%;
 
+            /*
+             * الصورة تملأ المستطيل
+             */
             object-fit: cover;
+
             display: block;
 
-            filter: blur(18px);
-            transform: scale(1.04);
+            /*
+             * تبدأ مغبشة
+             */
+            filter: blur(13px);
+
+            transform: scale(1.035);
 
             transition:
                 filter 0.8s ease,
                 transform 0.8s ease;
         }
 
-        /* عند اكتمال المسح */
         .scratch-wrapper.revealed .gift-image {
             filter: blur(0);
             transform: scale(1);
         }
 
-        /* Canvas الخاص بالمسح */
+
+        /* =========================
+           Canvas الخدش
+        ========================= */
+
         #scratchCanvas {
             position: absolute;
             inset: 0;
@@ -305,49 +327,77 @@
 
             display: block;
 
-            cursor: crosshair;
-
             touch-action: none;
+
+            cursor: crosshair;
         }
 
-        /* طبقة المسح */
+
+        /* =========================
+           طبقة الخدش
+        ========================= */
+
         .scratch-cover {
             position: absolute;
             inset: 0;
 
             pointer-events: none;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(115, 116, 123, 0.96),
-                    rgba(55, 56, 62, 0.97)
-                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: opacity 0.6s ease;
+        }
+
+        .scratch-cover-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+
+            color: rgba(255, 255, 255, 0.78);
+
+            pointer-events: none;
+
+            text-align: center;
+
+            text-shadow:
+                0 2px 12px rgba(0, 0, 0, 0.7);
+        }
+
+        .scratch-icon {
+            width: 38px;
+            height: 38px;
+
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            transition: opacity 0.7s ease;
+            font-size: 17px;
+
+            animation:
+                scratchHint 1.7s ease-in-out infinite;
         }
 
-        .scratch-cover span {
-            color: rgba(255, 255, 255, 0.78);
+        .scratch-cover-content span {
             font-size: 14px;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-
-            animation: scratchHint 1.7s ease-in-out infinite;
+            letter-spacing: 0.5px;
         }
 
         @keyframes scratchHint {
             0%,
             100% {
                 opacity: 0.45;
+                transform: translateX(-4px);
             }
 
             50% {
                 opacity: 1;
+                transform: translateX(4px);
             }
         }
 
@@ -355,20 +405,23 @@
             opacity: 0;
         }
 
+
         /* =========================
            الأزرار
         ========================= */
 
         .actions {
-            width: min(86vw, 390px);
+            width: min(90vw, 500px);
 
             display: flex;
-            gap: 10px;
+            gap: 12px;
 
-            margin-top: 18px;
+            margin-top: 20px;
 
             opacity: 0;
-            transform: translateY(12px);
+
+            transform: translateY(14px);
+
             pointer-events: none;
 
             transition:
@@ -378,23 +431,33 @@
 
         .actions.show {
             opacity: 1;
+
             transform: translateY(0);
+
             pointer-events: auto;
         }
 
         .action-button {
             flex: 1;
 
-            height: 48px;
+            height: 52px;
 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.11);
 
-            background: rgba(255, 255, 255, 0.07);
-            color: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.09),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            color: rgba(255, 255, 255, 0.93);
 
             font-family: inherit;
-            font-size: 13px;
+
+            font-size: 14px;
             font-weight: 500;
 
             cursor: pointer;
@@ -409,28 +472,39 @@
 
         .action-button:active {
             transform: scale(0.97);
-            background: rgba(255, 255, 255, 0.12);
+
+            background:
+                rgba(255, 255, 255, 0.13);
         }
 
+
         /* =========================
-           النص + IMG_7293
+           الرسالة
         ========================= */
 
         .gift-message {
             display: flex;
+
+            /*
+             * النص أولاً والستيكر يساره
+             * بسبب RTL ترتيب العناصر
+             */
+            direction: rtl;
+
             align-items: center;
             justify-content: center;
 
-            gap: 7px;
+            gap: 8px;
 
-            margin-top: 18px;
+            margin-top: 17px;
 
-            color: rgba(255, 255, 255, 0.82);
+            color: rgba(255, 255, 255, 0.85);
 
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 400;
 
             opacity: 0;
+
             transform: translateY(8px);
 
             transition:
@@ -440,18 +514,25 @@
 
         .gift-message.show {
             opacity: 1;
+
             transform: translateY(0);
         }
 
         .gift-message img {
-            width: 25px;
-            height: 25px;
+            /*
+             * حجم صغير لكن منطقي كإيموجي
+             */
+            width: 30px;
+            height: 30px;
 
             object-fit: contain;
 
             filter:
-                drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+                drop-shadow(
+                    0 4px 8px rgba(0, 0, 0, 0.5)
+                );
         }
+
 
         /* =========================
            IMG_7294 أسفل الشاشة
@@ -460,19 +541,22 @@
         .bottom-image {
             position: absolute;
 
-            bottom: 18px;
+            bottom: 14px;
 
-            width: 105px;
-            height: 105px;
+            width: 115px;
+            height: 115px;
 
             object-fit: contain;
 
             filter:
-                drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
+                drop-shadow(
+                    0 12px 24px rgba(0, 0, 0, 0.58)
+                );
 
             pointer-events: none;
 
-            animation: bottomFloat 4s ease-in-out infinite;
+            animation:
+                bottomFloat 4s ease-in-out infinite;
         }
 
         @keyframes bottomFloat {
@@ -482,39 +566,103 @@
             }
 
             50% {
-                transform: translateY(-6px);
+                transform: translateY(-7px);
             }
         }
+
 
         /* =========================
            الجوال
         ========================= */
 
         @media (max-width: 600px) {
+
             .intro::after {
                 inset: 12px;
                 border-radius: 18px;
             }
 
             .gift-screen {
-                padding-top: 20px;
+                padding:
+                    20px
+                    16px
+                    0;
             }
 
             .scratch-wrapper {
-                margin-top: 4vh;
-                width: min(86vw, 360px);
+                /*
+                 * مستطيل مناسب للجوال
+                 */
+                width: 92vw;
+
+                height: 55vh;
+
+                max-height: 330px;
+
+                margin-top: 8vh;
+
+                border-radius: 18px;
+            }
+
+            .actions {
+                width: 92vw;
+
+                gap: 9px;
+
+                margin-top: 16px;
+            }
+
+            .action-button {
+                height: 50px;
+
+                font-size: 13px;
+
+                border-radius: 13px;
+            }
+
+            .gift-message {
+                margin-top: 15px;
+
+                font-size: 14px;
+            }
+
+            .gift-message img {
+                width: 29px;
+                height: 29px;
             }
 
             .bottom-image {
-                bottom: 12px;
-                width: 90px;
-                height: 90px;
+                bottom: 10px;
+
+                width: 95px;
+                height: 95px;
             }
         }
+
+
+        /* =========================
+           الشاشات القصيرة
+        ========================= */
+
+        @media (max-height: 700px) {
+
+            .scratch-wrapper {
+                margin-top: 5vh;
+
+                height: 48vh;
+            }
+
+            .bottom-image {
+                width: 75px;
+                height: 75px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
+
 
     <!-- =========================
          شاشة البداية
@@ -525,7 +673,9 @@
         <div class="stickers" id="stickers"></div>
 
         <div class="content">
-            <div class="intro-text">TAP ANYWHERE</div>
+            <div class="intro-text">
+                TAP ANYWHERE
+            </div>
         </div>
 
     </div>
@@ -537,27 +687,53 @@
 
     <main class="gift-screen" id="giftScreen">
 
-        <!-- مربع الصورة -->
-        <div class="scratch-wrapper" id="scratchWrapper">
 
+        <!-- الهدية -->
+        <div
+            class="scratch-wrapper"
+            id="scratchWrapper"
+        >
+
+            <!-- الصورة الحقيقية -->
             <img
-                src="c68ab733-10e2-4463-b818-c4b6cbc999fb.jpeg"
+                src="IMG_7302.png"
                 class="gift-image"
                 id="giftImage"
                 alt="Gift"
             >
 
-            <canvas id="scratchCanvas"></canvas>
 
+            <!-- طبقة المسح -->
+            <canvas
+                id="scratchCanvas"
+            ></canvas>
+
+
+            <!-- النص الموجود فوق طبقة المسح -->
             <div class="scratch-cover">
-                <span>امسح للكشف عن الهدية</span>
+
+                <div class="scratch-cover-content">
+
+                    <div class="scratch-icon">
+                        ←
+                    </div>
+
+                    <span>
+                        امسح للكشف عن الهدية
+                    </span>
+
+                </div>
+
             </div>
 
         </div>
 
 
         <!-- الأزرار -->
-        <div class="actions" id="actions">
+        <div
+            class="actions"
+            id="actions"
+        >
 
             <button
                 class="action-button"
@@ -579,9 +755,14 @@
 
 
         <!-- الرسالة -->
-        <div class="gift-message" id="giftMessage">
+        <div
+            class="gift-message"
+            id="giftMessage"
+        >
 
-            <span>هدية بسيطة مني</span>
+            <span>
+                هدية بسيطة مني
+            </span>
 
             <img
                 src="IMG_7293.png"
@@ -591,7 +772,7 @@
         </div>
 
 
-        <!-- الصورة السفلية -->
+        <!-- العنصر السفلي -->
         <img
             src="IMG_7294.png"
             class="bottom-image"
@@ -604,74 +785,144 @@
     <script>
 
         /* =====================================================
-           شاشة البداية - نفس الكود الأساسي
+           شاشة البداية
         ===================================================== */
 
-        const intro = document.getElementById("intro");
-        const stickers = document.getElementById("stickers");
+        const intro =
+            document.getElementById("intro");
 
-        const image = "IMG_7293.png";
+        const stickers =
+            document.getElementById("stickers");
 
-        const amount = window.innerWidth < 600 ? 18 : 24;
+        const image =
+            "IMG_7293.png";
+
+        const amount =
+            window.innerWidth < 600
+                ? 18
+                : 24;
 
         const positions = [
-            [6, 8], [28, 7], [52, 8], [76, 8], [91, 17],
-            [7, 30], [24, 25], [77, 27], [93, 34],
-            [5, 53], [22, 73], [78, 72], [94, 55],
-            [7, 82], [29, 90], [52, 88], [76, 90], [93, 81],
-            [15, 57], [86, 59], [38, 10], [64, 11], [38, 88], [63, 87]
+
+            [6, 8],
+            [28, 7],
+            [52, 8],
+            [76, 8],
+            [91, 17],
+
+            [7, 30],
+            [24, 25],
+            [77, 27],
+            [93, 34],
+
+            [5, 53],
+            [22, 73],
+            [78, 72],
+            [94, 55],
+
+            [7, 82],
+            [29, 90],
+            [52, 88],
+            [76, 90],
+            [93, 81],
+
+            [15, 57],
+            [86, 59],
+            [38, 10],
+            [64, 11],
+            [38, 88],
+            [63, 87]
+
         ];
 
-        const shuffled = [...positions].sort(
-            () => Math.random() - 0.5
-        );
+        const shuffled =
+            [...positions].sort(
+                () => Math.random() - 0.5
+            );
+
 
         for (
             let i = 0;
-            i < Math.min(amount, shuffled.length);
+            i < Math.min(
+                amount,
+                shuffled.length
+            );
             i++
         ) {
 
-            const container = document.createElement("div");
+            const container =
+                document.createElement("div");
 
-            container.className = "sticker-container";
+            container.className =
+                "sticker-container";
 
-            const sticker = document.createElement("img");
 
-            sticker.src = image;
-            sticker.className = "sticker";
-            sticker.alt = "Gift sticker";
+            const sticker =
+                document.createElement("img");
 
-            const [x, y] = shuffled[i];
+            sticker.src =
+                image;
 
-            container.style.left = `${x}%`;
-            container.style.top = `${y}%`;
+            sticker.className =
+                "sticker";
 
-            const size = 65 + Math.random() * 35;
+            sticker.alt =
+                "Gift sticker";
+
+
+            const [
+                x,
+                y
+            ] = shuffled[i];
+
+
+            container.style.left =
+                `${x}%`;
+
+            container.style.top =
+                `${y}%`;
+
+
+            const size =
+                65 +
+                Math.random() * 35;
+
 
             container.style.setProperty(
                 "--size",
                 `${size}px`
             );
 
-            const duration = 4 + Math.random() * 3;
+
+            const duration =
+                4 +
+                Math.random() * 3;
+
 
             sticker.style.setProperty(
                 "--duration",
                 `${duration}s`
             );
 
+
             sticker.style.setProperty(
                 "--float-delay",
                 `${Math.random() * 2}s`
             );
 
+
             container.style.animationDelay =
                 `${i * 0.08}s`;
 
-            container.appendChild(sticker);
 
-            stickers.appendChild(container);
+            container.appendChild(
+                sticker
+            );
+
+            stickers.appendChild(
+                container
+            );
+
         }
 
 
@@ -679,89 +930,131 @@
            الانتقال لشاشة الهدية
         ===================================================== */
 
-        const handleDismiss = () => {
+        const handleDismiss =
+            () => {
 
-            intro.classList.add("hide");
+                intro.classList.add(
+                    "hide"
+                );
 
-            setTimeout(() => {
 
-                intro.style.display = "none";
+                setTimeout(() => {
 
-                startScratch();
+                    intro.style.display =
+                        "none";
 
-            }, 800);
+                    startScratch();
 
-        };
+                }, 800);
+
+            };
+
 
         intro.addEventListener(
             "pointerdown",
             handleDismiss,
-            { once: true }
+            {
+                once: true
+            }
         );
 
 
         /* =====================================================
-           نظام المسح
+           نظام Scratch
         ===================================================== */
 
         const canvas =
-            document.getElementById("scratchCanvas");
+            document.getElementById(
+                "scratchCanvas"
+            );
 
         const ctx =
-            canvas.getContext("2d", {
-                willReadFrequently: true
-            });
+            canvas.getContext(
+                "2d",
+                {
+                    willReadFrequently: true
+                }
+            );
+
 
         const scratchWrapper =
-            document.getElementById("scratchWrapper");
+            document.getElementById(
+                "scratchWrapper"
+            );
+
 
         const actions =
-            document.getElementById("actions");
+            document.getElementById(
+                "actions"
+            );
+
 
         const giftMessage =
-            document.getElementById("giftMessage");
+            document.getElementById(
+                "giftMessage"
+            );
 
-        let isDrawing = false;
 
-        let revealed = false;
+        let isDrawing =
+            false;
 
-        let scratchedPoints = 0;
+        let revealed =
+            false;
+
+        let scratchedPoints =
+            0;
 
         let lastX = 0;
         let lastY = 0;
 
 
+        /* =====================================================
+           تشغيل Canvas
+        ===================================================== */
+
         function startScratch() {
 
             resizeCanvas();
 
-            window.addEventListener(
-                "resize",
-                resizeCanvas
-            );
-
         }
 
+
+        /* =====================================================
+           تجهيز طبقة الخدش
+        ===================================================== */
 
         function resizeCanvas() {
 
             const rect =
                 scratchWrapper.getBoundingClientRect();
 
+
             const dpr =
-                Math.min(window.devicePixelRatio || 1, 2);
+                Math.min(
+                    window.devicePixelRatio || 1,
+                    2
+                );
+
 
             canvas.width =
-                Math.round(rect.width * dpr);
+                Math.round(
+                    rect.width * dpr
+                );
+
 
             canvas.height =
-                Math.round(rect.height * dpr);
+                Math.round(
+                    rect.height * dpr
+                );
+
 
             canvas.style.width =
                 `${rect.width}px`;
 
+
             canvas.style.height =
                 `${rect.height}px`;
+
 
             ctx.setTransform(
                 dpr,
@@ -772,11 +1065,16 @@
                 0
             );
 
-            /*
-             * طبقة رمادية فوق الصورة
-             */
+
             ctx.globalCompositeOperation =
                 "source-over";
+
+
+            /*
+             * طبقة Scratch ليست مجرد لون واحد.
+             * فيها تدرج يعطي إحساس أنها طبقة
+             * موجودة فوق الصورة.
+             */
 
             const gradient =
                 ctx.createLinearGradient(
@@ -786,22 +1084,36 @@
                     rect.height
                 );
 
+
             gradient.addColorStop(
                 0,
-                "rgba(120,121,128,0.98)"
+                "#92939a"
             );
 
             gradient.addColorStop(
-                0.5,
-                "rgba(75,76,83,0.98)"
+                0.25,
+                "#6f7077"
+            );
+
+            gradient.addColorStop(
+                0.55,
+                "#818289"
+            );
+
+            gradient.addColorStop(
+                0.8,
+                "#5c5d64"
             );
 
             gradient.addColorStop(
                 1,
-                "rgba(48,49,55,0.98)"
+                "#42434a"
             );
 
-            ctx.fillStyle = gradient;
+
+            ctx.fillStyle =
+                gradient;
+
 
             ctx.fillRect(
                 0,
@@ -810,111 +1122,179 @@
                 rect.height
             );
 
+
             /*
-             * نضيف لمعة خفيفة
+             * خطوط وملمس بسيط جدًا
+             * حتى تظهر كطبقة قابلة للمسح.
              */
-            ctx.globalAlpha = 0.12;
 
-            ctx.fillStyle = "#ffffff";
+            ctx.globalAlpha =
+                0.12;
 
-            ctx.beginPath();
+
+            for (
+                let i = -rect.height;
+                i < rect.width;
+                i += 18
+            ) {
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    i,
+                    0
+                );
+
+                ctx.lineTo(
+                    i + rect.height,
+                    rect.height
+                );
+
+                ctx.lineWidth =
+                    1;
+
+                ctx.strokeStyle =
+                    "#ffffff";
+
+                ctx.stroke();
+
+            }
+
+
+            ctx.globalAlpha =
+                0.08;
+
 
             for (
                 let i = 0;
-                i < 100;
+                i < 250;
                 i++
             ) {
 
                 const x =
-                    Math.random() * rect.width;
+                    Math.random() *
+                    rect.width;
 
                 const y =
-                    Math.random() * rect.height;
+                    Math.random() *
+                    rect.height;
+
+
+                ctx.beginPath();
 
                 ctx.arc(
                     x,
                     y,
-                    1.5,
+                    Math.random() * 2,
                     0,
                     Math.PI * 2
                 );
 
+                ctx.fillStyle =
+                    "#ffffff";
+
                 ctx.fill();
+
             }
 
-            ctx.globalAlpha = 1;
+
+            ctx.globalAlpha =
+                1;
+
         }
 
+
+        /* =====================================================
+           تحديد مكان الإصبع
+        ===================================================== */
 
         function getPosition(event) {
 
             const rect =
                 canvas.getBoundingClientRect();
 
-            let clientX;
-            let clientY;
-
-            if (event.touches) {
-
-                clientX =
-                    event.touches[0].clientX;
-
-                clientY =
-                    event.touches[0].clientY;
-
-            } else {
-
-                clientX =
-                    event.clientX;
-
-                clientY =
-                    event.clientY;
-            }
 
             return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+
+                x:
+                    event.clientX -
+                    rect.left,
+
+                y:
+                    event.clientY -
+                    rect.top
+
             };
 
         }
 
 
+        /* =====================================================
+           تنفيذ المسح
+        ===================================================== */
+
         function scratch(event) {
 
-            if (revealed) return;
+            if (revealed)
+                return;
+
 
             event.preventDefault();
+
 
             const {
                 x,
                 y
-            } = getPosition(event);
+            } =
+                getPosition(event);
+
 
             ctx.globalCompositeOperation =
                 "destination-out";
 
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
+
+            ctx.lineCap =
+                "round";
+
+            ctx.lineJoin =
+                "round";
+
 
             /*
-             * حجم منطقة المسح
+             * فرشاة أكبر على الجوال
+             * حتى يكون المسح طبيعيًا.
              */
+
             const brushSize =
                 window.innerWidth < 600
-                    ? 48
-                    : 58;
+                    ? 62
+                    : 70;
 
-            ctx.lineWidth = brushSize;
+
+            ctx.lineWidth =
+                brushSize;
+
 
             /*
-             * خط ناعم بين النقاط
+             * إذا كانت أول لمسة
+             * نبدأ من مكانها.
              */
-            if (lastX === 0 && lastY === 0) {
+
+            if (
+                lastX === 0 &&
+                lastY === 0
+            ) {
 
                 lastX = x;
                 lastY = y;
 
             }
+
+
+            /*
+             * نرسم خطًا بين المكان القديم
+             * والجديد حتى لا تظهر فجوات.
+             */
 
             ctx.beginPath();
 
@@ -930,9 +1310,11 @@
 
             ctx.stroke();
 
+
             /*
-             * دائرة عند الإصبع
+             * دائرة عند نهاية الإصبع.
              */
+
             ctx.beginPath();
 
             ctx.arc(
@@ -945,50 +1327,73 @@
 
             ctx.fill();
 
-            lastX = x;
-            lastY = y;
+
+            lastX =
+                x;
+
+            lastY =
+                y;
+
 
             scratchedPoints++;
 
+
             /*
-             * نفحص نسبة المسح كل عدة حركات
+             * نفحص كل عدة حركات.
              */
-            if (scratchedPoints % 8 === 0) {
+
+            if (
+                scratchedPoints % 10 === 0
+            ) {
+
                 checkReveal();
+
             }
 
         }
 
 
+        /* =====================================================
+           انتهاء المسح
+        ===================================================== */
+
         function stopScratch() {
 
-            isDrawing = false;
+            isDrawing =
+                false;
 
-            lastX = 0;
-            lastY = 0;
+
+            lastX =
+                0;
+
+            lastY =
+                0;
+
 
             checkReveal();
 
         }
 
 
+        /* =====================================================
+           حساب كمية المسح
+        ===================================================== */
+
         function checkReveal() {
 
-            if (revealed) return;
+            if (revealed)
+                return;
 
-            const width =
-                canvas.width;
 
-            const height =
-                canvas.height;
+            const sampleSize =
+                50;
 
-            /*
-             * نصغر الفحص حتى يكون خفيفًا على الجوال
-             */
-            const sampleSize = 40;
 
             const tempCanvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             tempCanvas.width =
                 sampleSize;
@@ -996,8 +1401,12 @@
             tempCanvas.height =
                 sampleSize;
 
+
             const tempCtx =
-                tempCanvas.getContext("2d");
+                tempCanvas.getContext(
+                    "2d"
+                );
+
 
             tempCtx.drawImage(
                 canvas,
@@ -1007,6 +1416,7 @@
                 sampleSize
             );
 
+
             const pixels =
                 tempCtx.getImageData(
                     0,
@@ -1015,8 +1425,13 @@
                     sampleSize
                 ).data;
 
-            let transparent = 0;
-            let total = 0;
+
+            let transparent =
+                0;
+
+            let total =
+                0;
+
 
             for (
                 let i = 3;
@@ -1026,20 +1441,31 @@
 
                 total++;
 
-                if (pixels[i] < 40) {
+
+                if (
+                    pixels[i] < 50
+                ) {
+
                     transparent++;
+
                 }
 
             }
 
+
             const percentage =
-                transparent / total;
+                transparent /
+                total;
+
 
             /*
-             * عند مسح 78% من الصورة
-             * نعتبرها مكتشفة بالكامل
+             * لا تنكشف الهدية إلا بعد
+             * مسح معظم الطبقة.
              */
-            if (percentage >= 0.78) {
+
+            if (
+                percentage >= 0.82
+            ) {
 
                 revealGift();
 
@@ -1048,29 +1474,43 @@
         }
 
 
+        /* =====================================================
+           إظهار الهدية
+        ===================================================== */
+
         function revealGift() {
 
-            if (revealed) return;
+            if (revealed)
+                return;
 
-            revealed = true;
 
-            /*
-             * نحذف طبقة المسح
-             */
+            revealed =
+                true;
+
+
             canvas.style.transition =
                 "opacity 0.5s ease";
 
-            canvas.style.opacity = "0";
+
+            canvas.style.opacity =
+                "0";
+
 
             scratchWrapper.classList.add(
                 "revealed"
             );
 
+
             setTimeout(() => {
 
-                actions.classList.add("show");
+                actions.classList.add(
+                    "show"
+                );
 
-                giftMessage.classList.add("show");
+
+                giftMessage.classList.add(
+                    "show"
+                );
 
             }, 350);
 
@@ -1078,41 +1518,51 @@
 
 
         /* =====================================================
-           أحداث اللمس والماوس
+           أحداث اللمس
         ===================================================== */
 
         canvas.addEventListener(
             "pointerdown",
             event => {
 
-                if (revealed) return;
+                if (revealed)
+                    return;
 
-                isDrawing = true;
+
+                isDrawing =
+                    true;
+
 
                 canvas.setPointerCapture(
                     event.pointerId
                 );
 
+
                 scratch(event);
 
             }
         );
+
 
         canvas.addEventListener(
             "pointermove",
             event => {
 
-                if (!isDrawing) return;
+                if (!isDrawing)
+                    return;
+
 
                 scratch(event);
 
             }
         );
 
+
         canvas.addEventListener(
             "pointerup",
             stopScratch
         );
+
 
         canvas.addEventListener(
             "pointercancel",
@@ -1125,50 +1575,75 @@
         ===================================================== */
 
         const saveImage =
-            document.getElementById("saveImage");
+            document.getElementById(
+                "saveImage"
+            );
+
 
         saveImage.addEventListener(
             "click",
             async () => {
 
-                if (!revealed) return;
+                if (!revealed)
+                    return;
+
 
                 const img =
-                    document.getElementById("giftImage");
+                    document.getElementById(
+                        "giftImage"
+                    );
+
 
                 try {
 
                     const response =
-                        await fetch(img.src);
+                        await fetch(
+                            img.src
+                        );
+
 
                     const blob =
                         await response.blob();
 
+
                     const url =
-                        URL.createObjectURL(blob);
+                        URL.createObjectURL(
+                            blob
+                        );
+
 
                     const link =
-                        document.createElement("a");
+                        document.createElement(
+                            "a"
+                        );
 
-                    link.href = url;
+
+                    link.href =
+                        url;
+
 
                     link.download =
-                        "my-gift.jpeg";
+                        "my-gift.png";
 
-                    document.body.appendChild(link);
+
+                    document.body.appendChild(
+                        link
+                    );
+
 
                     link.click();
 
+
                     link.remove();
 
-                    URL.revokeObjectURL(url);
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
 
                 } catch (error) {
 
-                    /*
-                     * إذا لم يسمح المتصفح بالتنزيل
-                     * نفتح الصورة مباشرة.
-                     */
                     window.open(
                         img.src,
                         "_blank"
@@ -1185,36 +1660,49 @@
         ===================================================== */
 
         const savePdf =
-            document.getElementById("savePdf");
+            document.getElementById(
+                "savePdf"
+            );
+
 
         savePdf.addEventListener(
             "click",
             () => {
 
-                if (!revealed) return;
+                if (!revealed)
+                    return;
+
 
                 const img =
-                    document.getElementById("giftImage");
+                    document.getElementById(
+                        "giftImage"
+                    );
 
-                /*
-                 * نفتح صفحة جاهزة للطباعة كـ PDF.
-                 * من الجوال يستطيع المستخدم اختيار
-                 * "حفظ في الملفات" كملف PDF.
-                 */
+
                 const printWindow =
                     window.open(
                         "",
                         "_blank"
                     );
 
-                if (!printWindow) return;
+
+                if (!printWindow)
+                    return;
+
 
                 printWindow.document.write(`
+
                     <!DOCTYPE html>
+
                     <html lang="ar">
+
                     <head>
+
                         <meta charset="UTF-8">
-                        <title>هدية</title>
+
+                        <title>
+                            هدية
+                        </title>
 
                         <style>
 
@@ -1228,7 +1716,7 @@
                                 padding: 0;
                                 width: 100%;
                                 min-height: 100%;
-                                background: #ffffff;
+                                background: white;
                             }
 
                             body {
@@ -1270,22 +1758,26 @@
 
                         <script>
 
-                            window.onload = function() {
+                            window.onload =
+                                function() {
 
-                                setTimeout(
-                                    function() {
-                                        window.print();
-                                    },
-                                    500
-                                );
+                                    setTimeout(
+                                        function() {
+                                            window.print();
+                                        },
+                                        500
+                                    );
 
-                            };
+                                };
 
                         <\/script>
 
                     </body>
+
                     </html>
+
                 `);
+
 
                 printWindow.document.close();
 
