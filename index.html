@@ -1,1157 +1,1224 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #05060d;
-        }
-        /* =========================
-           شاشة البداية
-        ========================= */
-        .intro {
-            position: fixed;
-            inset: 0;
-            overflow: hidden;
-            z-index: 1000;
-            background:
-                radial-gradient(circle at 15% 15%, rgba(72, 42, 120, 0.42), transparent 34%),
-                radial-gradient(circle at 85% 80%, rgba(25, 57, 110, 0.38), transparent 38%),
-                radial-gradient(circle at 50% 50%, rgba(50, 34, 88, 0.16), transparent 55%),
-                linear-gradient(135deg, #05060d 0%, #090d20 32%, #11102c 55%, #0b1024 75%, #05060d 100%);
-            cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .intro::after {
-            content: "";
-            position: absolute;
-            inset: 16px;
-            border: 1px solid rgba(135, 108, 210, 0.42);
-            border-radius: 24px;
-            box-shadow:
-                0 0 25px rgba(94, 62, 150, 0.18),
-                inset 0 0 35px rgba(60, 45, 110, 0.08);
-            pointer-events: none;
-            z-index: 100;
-        }
-        .intro::before {
-            content: "";
-            position: absolute;
-            width: 70vw;
-            height: 70vw;
-            max-width: 700px;
-            max-height: 700px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(86, 56, 145, 0.13), transparent 65%);
-            filter: blur(35px);
-            animation: glow 8s ease-in-out infinite alternate;
-            pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes glow {
-            from {
-                transform: translate(-55%, -50%) scale(0.9);
-            }
-            to {
-                transform: translate(-45%, -50%) scale(1.12);
-            }
-        }
-        .stickers {
-            position: absolute;
-            inset: 0;
-            z-index: 5;
-            pointer-events: none;
-        }
-        .sticker-container {
-            position: absolute;
-            width: var(--size);
-            height: var(--size);
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            animation:
-                stickerPop 0.65s cubic-bezier(0.22, 1.15, 0.36, 1) forwards;
-            will-change: transform, opacity;
-        }
-        .sticker {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: contain;
-            user-select: none;
-            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.5));
-            animation: stickerFloat var(--duration) ease-in-out infinite;
-            animation-delay: var(--float-delay);
-            will-change: transform;
-        }
-        @keyframes stickerPop {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.15) rotate(-8deg);
-            }
-            55% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.06) rotate(2deg);
-            }
-            78% {
-                transform: translate(-50%, -50%) scale(0.98) rotate(-1deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            }
-        }
-        @keyframes stickerFloat {
-            0% {
-                transform: translate3d(0, 0, 0) rotate(-2deg);
-            }
-            50% {
-                transform: translate3d(5px, -9px, 0) rotate(2deg);
-            }
-            100% {
-                transform: translate3d(0, 0, 0) rotate(-2deg);
-            }
-        }
-        .content {
-            position: relative;
-            z-index: 50;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-        .intro-text {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.95);
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                sans-serif;
-            font-size: clamp(13px, 3vw, 17px);
-            font-weight: 500;
-            letter-spacing: 3px;
-            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.9);
-            opacity: 0;
-            animation: textAppear 0.9s ease 1.3s forwards;
-        }
-        @keyframes textAppear {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 0.9;
-                transform: translateY(0);
-            }
-        }
-        .intro.hide {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        /* =========================
-           شاشة الهدية
-        ========================= */
-        .gift-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background:
-                radial-gradient(
-                    ellipse at 50% 38%,
-                    rgba(95, 96, 105, 0.16),
-                    transparent 45%
-                ),
-                linear-gradient(
-                    145deg,
-                    #191a1e 0%,
-                    #121318 45%,
-                    #08090c 100%
-                );
-            color: white;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                sans-serif;
-            overflow: hidden;
-            padding: 20px 16px 0;
-        }
-        .gift-screen::before {
-            content: "";
-            position: absolute;
-            inset: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 22px;
-            pointer-events: none;
-        }
-        /* =========================
-           صندوق الصورة
-        ========================= */
-        .scratch-wrapper {
-            position: relative;
-            /*
-             * أبعاد مستطيلة قريبة من
-             * أبعاد الصورة الأصلية 1280 × 867
-             */
-            width: min(86vw, 440px);
-            aspect-ratio: 1280 / 867;
-            /*
-             * تصغيرها قليلًا مع إبقائها
-             * في منتصف الصفحة
-             */
-            margin-top: 12vh;
-            border-radius: 18px;
-            overflow: hidden;
-            background: #111217;
-            box-shadow:
-                0 25px 60px rgba(0, 0, 0, 0.60),
-                0 0 0 1px rgba(255, 255, 255, 0.08);
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-        }
-        /* =========================
-           الصورة الحقيقية
-        ========================= */
-        .gift-image {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            /*
-             * ضباب خفيف تحت طبقة الخدش
-             */
-            filter: blur(14px);
-            transform: scale(1.035);
-            transition:
-                filter 0.8s ease,
-                transform 0.8s ease;
-        }
-        .scratch-wrapper.revealed .gift-image {
-            filter: blur(0);
-            transform: scale(1);
-        }
-        /* =========================
-           Canvas الخاص بالمسح
-        ========================= */
-        #scratchCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            touch-action: none;
-            cursor: crosshair;
-        }
-        /* =========================
-           محتوى طبقة المسح
-        ========================= */
-        .scratch-cover {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.55s ease;
-        }
-        .scratch-cover-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 9px;
-            color: rgba(255, 255, 255, 0.84);
-            text-align: center;
-            text-shadow:
-                0 2px 12px rgba(0, 0, 0, 0.8);
-        }
-        .scratch-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 19px;
-            animation:
-                scratchHint 1.5s ease-in-out infinite;
-        }
-        .scratch-cover-content span {
-            font-size: 14px;
-            font-weight: 400;
-            letter-spacing: 0;
-        }
-        @keyframes scratchHint {
-            0%,
-            100% {
-                opacity: 0.45;
-                transform: translateX(-5px);
-            }
-            50% {
-                opacity: 1;
-                transform: translateX(5px);
-            }
-        }
-        .scratch-wrapper.revealed .scratch-cover {
-            opacity: 0;
-        }
-        /* =========================
-           زر الحفظ
-        ========================= */
-        .actions {
-            width: min(86vw, 440px);
-            display: flex;
-            margin-top: 18px;
-            opacity: 0;
-            transform: translateY(12px);
-            pointer-events: none;
-            transition:
-                opacity 0.65s ease,
-                transform 0.65s ease;
-        }
-        .actions.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .action-button {
-            width: 100%;
-            height: 52px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255, 255, 255, 0.10),
-                    rgba(255, 255, 255, 0.045)
-                );
-            color: rgba(255, 255, 255, 0.94);
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease;
-        }
-        .action-button:active {
-            transform: scale(0.98);
-            background:
-                rgba(255, 255, 255, 0.14);
-        }
-        /* =========================
-           النص أسفل الهدية
-        ========================= */
-        .gift-message {
-            display: flex;
-            /*
-             * RTL يجعل الستكر
-             * على يسار الكلام
-             */
-            direction: rtl;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            margin-top: 14px;
-            color: rgba(255, 255, 255, 0.84);
-            font-size: 15px;
-            opacity: 0;
-            transform: translateY(8px);
-            transition:
-                opacity 0.65s ease,
-                transform 0.65s ease;
-        }
-        .gift-message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .gift-message img {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-            filter:
-                drop-shadow(
-                    0 4px 8px rgba(0, 0, 0, 0.5)
-                );
-        }
-        /* =========================
-           IMG_7294 أسفل الشاشة
-        ========================= */
-        .bottom-image {
-            position: absolute;
-            bottom: 10px;
-            width: 125px;
-            height: 125px;
-            object-fit: contain;
-            filter:
-                drop-shadow(
-                    0 12px 25px rgba(0, 0, 0, 0.58)
-                );
-            pointer-events: none;
-            animation:
-                bottomFloat 4s ease-in-out infinite;
-        }
-        @keyframes bottomFloat {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-7px);
-            }
-        }
-        /* =========================
-           الجوال
-        ========================= */
-        @media (max-width: 600px) {
-            .intro::after {
-                inset: 12px;
-                border-radius: 18px;
-            }
-            .gift-screen {
-                padding:
-                    16px
-                    14px
-                    0;
-            }
-            .gift-screen::before {
-                inset: 10px;
-                border-radius: 18px;
-            }
-            .scratch-wrapper {
-                /*
-                 * 86% من عرض الجوال
-                 * مع الحفاظ على نسبة الصورة
-                 */
-                width: 86vw;
-                aspect-ratio: 1280 / 867;
-                margin-top: 13vh;
-                border-radius: 16px;
-            }
-            .actions {
-                width: 86vw;
-                margin-top: 15px;
-            }
-            .action-button {
-                height: 50px;
-                font-size: 13px;
-                border-radius: 13px;
-            }
-            .gift-message {
-                margin-top: 13px;
-                font-size: 14px;
-            }
-            .gift-message img {
-                width: 32px;
-                height: 32px;
-            }
-            .bottom-image {
-                bottom: 8px;
-                width: 110px;
-                height: 110px;
-            }
-        }
-        /* =========================
-           الشاشات القصيرة
-        ========================= */
-        @media (max-height: 700px) {
-            .scratch-wrapper {
-                margin-top: 7vh;
-            }
-            .bottom-image {
-                width: 90px;
-                height: 90px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gift</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#05060d;
+}
+/* =========================
+   شاشة البداية
+========================= */
+.intro{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:1000;
+    background:
+        radial-gradient(circle at 15% 15%,rgba(72,42,120,.42),transparent 34%),
+        radial-gradient(circle at 85% 80%,rgba(25,57,110,.38),transparent 38%),
+        radial-gradient(circle at 50% 50%,rgba(50,34,88,.16),transparent 55%),
+        linear-gradient(135deg,#05060d 0%,#090d20 32%,#11102c 55%,#0b1024 75%,#05060d 100%);
+    cursor:pointer;
+    transition:opacity .8s ease,visibility .8s ease;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+.intro::after{
+    content:"";
+    position:absolute;
+    inset:16px;
+    border:1px solid rgba(135,108,210,.42);
+    border-radius:24px;
+    box-shadow:
+        0 0 25px rgba(94,62,150,.18),
+        inset 0 0 35px rgba(60,45,110,.08);
+    pointer-events:none;
+    z-index:100;
+}
+.intro::before{
+    content:"";
+    position:absolute;
+    width:70vw;
+    height:70vw;
+    max-width:700px;
+    max-height:700px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:
+        radial-gradient(
+            circle,
+            rgba(86,56,145,.13),
+            transparent 65%
+        );
+    filter:blur(35px);
+    animation:glow 8s ease-in-out infinite alternate;
+    pointer-events:none;
+    z-index:0;
+}
+@keyframes glow{
+    from{
+        transform:translate(-55%,-50%) scale(.9);
+    }
+    to{
+        transform:translate(-45%,-50%) scale(1.12);
+    }
+}
+.stickers{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    pointer-events:none;
+}
+.sticker-container{
+    position:absolute;
+    width:var(--size);
+    height:var(--size);
+    opacity:0;
+    transform:translate(-50%,-50%);
+    animation:
+        stickerPop .65s cubic-bezier(.22,1.15,.36,1) forwards;
+}
+.sticker{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:contain;
+    user-select:none;
+    filter:
+        drop-shadow(
+            0 10px 22px rgba(0,0,0,.5)
+        );
+    animation:
+        stickerFloat var(--duration) ease-in-out infinite;
+    animation-delay:var(--float-delay);
+}
+@keyframes stickerPop{
+    0%{
+        opacity:0;
+        transform:
+            translate(-50%,-50%)
+            scale(.15)
+            rotate(-8deg);
+    }
+    55%{
+        opacity:1;
+        transform:
+            translate(-50%,-50%)
+            scale(1.06)
+            rotate(2deg);
+    }
+    78%{
+        transform:
+            translate(-50%,-50%)
+            scale(.98)
+            rotate(-1deg);
+    }
+    100%{
+        opacity:1;
+        transform:
+            translate(-50%,-50%)
+            scale(1)
+            rotate(0deg);
+    }
+}
+@keyframes stickerFloat{
+    0%{
+        transform:translate3d(0,0,0) rotate(-2deg);
+    }
+    50%{
+        transform:translate3d(5px,-9px,0) rotate(2deg);
+    }
+    100%{
+        transform:translate3d(0,0,0) rotate(-2deg);
+    }
+}
+.content{
+    position:relative;
+    z-index:50;
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+}
+.intro-text{
+    text-align:center;
+    color:rgba(255,255,255,.95);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    font-size:clamp(13px,3vw,17px);
+    font-weight:500;
+    letter-spacing:3px;
+    text-shadow:
+        0 2px 15px rgba(0,0,0,.9);
+    opacity:0;
+    animation:
+        textAppear .9s ease 1.3s forwards;
+}
+@keyframes textAppear{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:.9;
+        transform:translateY(0);
+    }
+}
+.intro.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+/* =========================
+   شاشة الهدية
+========================= */
+.gift-screen{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background:
+        radial-gradient(
+            ellipse at 50% 38%,
+            rgba(95,96,105,.16),
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #191a1e 0%,
+            #121318 45%,
+            #08090c 100%
+        );
+    color:white;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    overflow:hidden;
+    padding:
+        20px
+        16px
+        0;
+}
+.gift-screen::before{
+    content:"";
+    position:absolute;
+    inset:12px;
+    border:
+        1px solid rgba(255,255,255,.08);
+    border-radius:22px;
+    pointer-events:none;
+}
+/* =========================
+   إطار الصورة
+========================= */
+.scratch-wrapper{
+    position:relative;
+    width:min(86vw,440px);
+    aspect-ratio:1280 / 867;
+    margin-top:12vh;
+    border-radius:18px;
+    overflow:hidden;
+    background:#111217;
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.60),
+        0 0 0 1px rgba(255,255,255,.08);
+    user-select:none;
+    -webkit-user-select:none;
+    touch-action:none;
+}
+/* =========================
+   الصورة
+========================= */
+.gift-image{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    /*
+     * الصورة تبقى داخل الإطار
+     * بدون خروج أو قص
+     */
+    object-fit:contain;
+    display:block;
+    background:#101116;
+    filter:blur(14px);
+    transform:scale(1.035);
+    transition:
+        filter .8s ease,
+        transform .8s ease;
+}
+.scratch-wrapper.revealed .gift-image{
+    filter:blur(0);
+    transform:scale(1);
+}
+/* =========================
+   طبقة Scratch
+========================= */
+#scratchCanvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    touch-action:none;
+    cursor:crosshair;
+    /*
+     * مهم جدًا:
+     * لا نستقبل أي لمس أثناء تجهيز الطبقة
+     */
+    pointer-events:none;
+    opacity:1;
+}
+.scratch-wrapper.ready #scratchCanvas{
+    pointer-events:auto;
+}
+/* =========================
+   النص فوق الخدش
+========================= */
+.scratch-cover{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .55s ease;
+}
+.scratch-cover-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+    color:rgba(255,255,255,.84);
+    text-align:center;
+    text-shadow:
+        0 2px 12px rgba(0,0,0,.8);
+}
+.scratch-icon{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    border:
+        1px solid rgba(255,255,255,.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+    animation:
+        scratchHint 1.5s ease-in-out infinite;
+}
+.scratch-cover-content span{
+    font-size:14px;
+    font-weight:400;
+}
+@keyframes scratchHint{
+    0%,100%{
+        opacity:.45;
+        transform:translateX(-5px);
+    }
+    50%{
+        opacity:1;
+        transform:translateX(5px);
+    }
+}
+.scratch-wrapper.revealed .scratch-cover{
+    opacity:0;
+}
+/* =========================
+   زر الحفظ
+========================= */
+.actions{
+    width:min(86vw,440px);
+    display:flex;
+    margin-top:18px;
+    opacity:0;
+    transform:translateY(12px);
+    pointer-events:none;
+    transition:
+        opacity .65s ease,
+        transform .65s ease;
+}
+.actions.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+}
+.action-button{
+    width:100%;
+    height:52px;
+    border:
+        1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.10),
+            rgba(255,255,255,.045)
+        );
+    color:rgba(255,255,255,.94);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    transition:
+        background .2s ease,
+        transform .2s ease;
+    -webkit-tap-highlight-color:transparent;
+}
+.action-button:active{
+    transform:scale(.98);
+    background:
+        rgba(255,255,255,.14);
+}
+/* =========================
+   الرسالة
+========================= */
+.gift-message{
+    display:flex;
+    direction:rtl;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    margin-top:14px;
+    color:rgba(255,255,255,.84);
+    font-size:15px;
+    opacity:0;
+    transform:translateY(8px);
+    transition:
+        opacity .65s ease,
+        transform .65s ease;
+}
+.gift-message.show{
+    opacity:1;
+    transform:translateY(0);
+}
+.gift-message img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+    filter:
+        drop-shadow(
+            0 4px 8px rgba(0,0,0,.5)
+        );
+}
+/* =========================
+   الصورة السفلية
+========================= */
+.bottom-image{
+    position:absolute;
+    bottom:10px;
+    width:125px;
+    height:125px;
+    object-fit:contain;
+    filter:
+        drop-shadow(
+            0 12px 25px rgba(0,0,0,.58)
+        );
+    pointer-events:none;
+    animation:
+        bottomFloat 4s ease-in-out infinite;
+}
+@keyframes bottomFloat{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-7px);
+    }
+}
+/* =========================
+   الجوال
+========================= */
+@media(max-width:600px){
+    .intro::after{
+        inset:12px;
+        border-radius:18px;
+    }
+    .gift-screen{
+        padding:
+            16px
+            14px
+            0;
+    }
+    .gift-screen::before{
+        inset:10px;
+        border-radius:18px;
+    }
+    .scratch-wrapper{
+        width:86vw;
+        aspect-ratio:1280 / 867;
+        margin-top:13vh;
+        border-radius:16px;
+    }
+    .actions{
+        width:86vw;
+        margin-top:15px;
+    }
+    .action-button{
+        height:50px;
+        font-size:13px;
+        border-radius:13px;
+    }
+    .gift-message{
+        margin-top:13px;
+        font-size:14px;
+    }
+    .gift-message img{
+        width:32px;
+        height:32px;
+    }
+    .bottom-image{
+        bottom:8px;
+        width:110px;
+        height:110px;
+    }
+}
+/* =========================
+   الشاشات القصيرة
+========================= */
+@media(max-height:700px){
+    .scratch-wrapper{
+        margin-top:7vh;
+    }
+    .bottom-image{
+        width:90px;
+        height:90px;
+    }
+}
+</style>
 </head>
 <body>
-    <!-- =========================
-         شاشة البداية
-    ========================= -->
-    <div class="intro" id="intro">
-        <div
-            class="stickers"
-            id="stickers"
-        ></div>
-        <div class="content">
-            <div class="intro-text">
-                TAP ANYWHERE
+<!-- =========================
+     شاشة البداية
+========================= -->
+<div class="intro" id="intro">
+    <div
+        class="stickers"
+        id="stickers"
+    ></div>
+    <div class="content">
+        <div class="intro-text">
+            TAP ANYWHERE
+        </div>
+    </div>
+</div>
+<!-- =========================
+     شاشة الهدية
+========================= -->
+<main
+    class="gift-screen"
+    id="giftScreen"
+>
+    <div
+        class="scratch-wrapper"
+        id="scratchWrapper"
+    >
+        <img
+            src="IMG_7302.png"
+            class="gift-image"
+            id="giftImage"
+            alt="Gift"
+        >
+        <canvas
+            id="scratchCanvas"
+        ></canvas>
+        <div class="scratch-cover">
+            <div class="scratch-cover-content">
+                <div class="scratch-icon">
+                    ←
+                </div>
+                <span>
+                    امسحي عشان تشوفين الصورة
+                </span>
             </div>
         </div>
     </div>
-    <!-- =========================
-         شاشة الهدية
-    ========================= -->
-    <main
-        class="gift-screen"
-        id="giftScreen"
+    <div
+        class="actions"
+        id="actions"
     >
-        <!-- الصورة -->
-        <div
-            class="scratch-wrapper"
-            id="scratchWrapper"
+        <button
+            class="action-button"
+            id="saveImage"
+            type="button"
         >
-            <!-- الصورة الحقيقية -->
-            <img
-                src="IMG_7302.png"
-                class="gift-image"
-                id="giftImage"
-                alt="Gift"
-            >
-            <!-- طبقة Scratch -->
-            <canvas
-                id="scratchCanvas"
-            ></canvas>
-            <!-- إرشاد المسح -->
-            <div class="scratch-cover">
-                <div class="scratch-cover-content">
-                    <div class="scratch-icon">
-                        ←
-                    </div>
-                    <span>
-                        امسحي عشان تشوفين الصورة
-                    </span>
-                </div>
-            </div>
-        </div>
-        <!-- زر الحفظ -->
-        <div
-            class="actions"
-            id="actions"
-        >
-            <button
-                class="action-button"
-                id="saveImage"
-                type="button"
-            >
-                حفظ بمعرض الصور
-            </button>
-        </div>
-        <!-- الرسالة -->
-        <div
-            class="gift-message"
-            id="giftMessage"
-        >
-            <span>
-                هدية بسيطة مني
-            </span>
-            <img
-                src="IMG_7293.png"
-                alt=""
-            >
-        </div>
-        <!-- العنصر السفلي -->
+            حفظ بمعرض الصور
+        </button>
+    </div>
+    <div
+        class="gift-message"
+        id="giftMessage"
+    >
+        <span>
+            هدية بسيطة مني
+        </span>
         <img
-            src="IMG_7294.png"
-            class="bottom-image"
+            src="IMG_7293.png"
             alt=""
         >
-    </main>
-    <script>
-        /* =====================================================
-           شاشة البداية
-        ===================================================== */
-        const intro =
-            document.getElementById("intro");
-        const stickers =
-            document.getElementById("stickers");
-        const image =
-            "IMG_7293.png";
-        const amount =
-            window.innerWidth < 600
-                ? 18
-                : 24;
-        const positions = [
-            [6, 8],
-            [28, 7],
-            [52, 8],
-            [76, 8],
-            [91, 17],
-            [7, 30],
-            [24, 25],
-            [77, 27],
-            [93, 34],
-            [5, 53],
-            [22, 73],
-            [78, 72],
-            [94, 55],
-            [7, 82],
-            [29, 90],
-            [52, 88],
-            [76, 90],
-            [93, 81],
-            [15, 57],
-            [86, 59],
-            [38, 10],
-            [64, 11],
-            [38, 88],
-            [63, 87]
-        ];
-        const shuffled =
-            [...positions].sort(
-                () => Math.random() - 0.5
-            );
-        for (
-            let i = 0;
-            i < Math.min(
-                amount,
-                shuffled.length
-            );
-            i++
-        ) {
-            const container =
-                document.createElement(
-                    "div"
-                );
-            container.className =
-                "sticker-container";
-            const sticker =
-                document.createElement(
-                    "img"
-                );
-            sticker.src =
-                image;
-            sticker.className =
-                "sticker";
-            sticker.alt =
-                "Gift sticker";
-            const [
-                x,
-                y
-            ] =
-                shuffled[i];
-            container.style.left =
-                `${x}%`;
-            container.style.top =
-                `${y}%`;
-            const size =
-                65 +
-                Math.random() * 35;
-            container.style.setProperty(
-                "--size",
-                `${size}px`
-            );
-            const duration =
-                4 +
-                Math.random() * 3;
-            sticker.style.setProperty(
-                "--duration",
-                `${duration}s`
-            );
-            sticker.style.setProperty(
-                "--float-delay",
-                `${Math.random() * 2}s`
-            );
-            container.style.animationDelay =
-                `${i * 0.08}s`;
-            container.appendChild(
-                sticker
-            );
-            stickers.appendChild(
-                container
-            );
+    </div>
+    <img
+        src="IMG_7294.png"
+        class="bottom-image"
+        alt=""
+    >
+</main>
+<script>
+/* =====================================================
+   شاشة البداية
+===================================================== */
+const intro =
+    document.getElementById("intro");
+const stickers =
+    document.getElementById("stickers");
+const image =
+    "IMG_7293.png";
+const amount =
+    window.innerWidth < 600
+        ? 18
+        : 24;
+const positions = [
+    [6,8],
+    [28,7],
+    [52,8],
+    [76,8],
+    [91,17],
+    [7,30],
+    [24,25],
+    [77,27],
+    [93,34],
+    [5,53],
+    [22,73],
+    [78,72],
+    [94,55],
+    [7,82],
+    [29,90],
+    [52,88],
+    [76,90],
+    [93,81],
+    [15,57],
+    [86,59],
+    [38,10],
+    [64,11],
+    [38,88],
+    [63,87]
+];
+const shuffled =
+    [...positions].sort(
+        () => Math.random() - .5
+    );
+for(
+    let i=0;
+    i<Math.min(
+        amount,
+        shuffled.length
+    );
+    i++
+){
+    const container =
+        document.createElement("div");
+    container.className =
+        "sticker-container";
+    const sticker =
+        document.createElement("img");
+    sticker.src =
+        image;
+    sticker.className =
+        "sticker";
+    sticker.alt =
+        "Gift sticker";
+    const [
+        x,
+        y
+    ] =
+        shuffled[i];
+    container.style.left =
+        `${x}%`;
+    container.style.top =
+        `${y}%`;
+    const size =
+        65 +
+        Math.random()*35;
+    container.style.setProperty(
+        "--size",
+        `${size}px`
+    );
+    const duration =
+        4 +
+        Math.random()*3;
+    sticker.style.setProperty(
+        "--duration",
+        `${duration}s`
+    );
+    sticker.style.setProperty(
+        "--float-delay",
+        `${Math.random()*2}s`
+    );
+    container.style.animationDelay =
+        `${i*.08}s`;
+    container.appendChild(
+        sticker
+    );
+    stickers.appendChild(
+        container
+    );
+}
+/* =====================================================
+   عناصر Scratch
+===================================================== */
+const canvas =
+    document.getElementById(
+        "scratchCanvas"
+    );
+const ctx =
+    canvas.getContext(
+        "2d",
+        {
+            willReadFrequently:true
         }
-        /* =====================================================
-           الانتقال
-        ===================================================== */
-        const handleDismiss =
-            () => {
-                intro.classList.add(
-                    "hide"
-                );
-                setTimeout(() => {
-                    intro.style.display =
-                        "none";
-                    startScratch();
-                }, 800);
-            };
-        intro.addEventListener(
-            "pointerdown",
-            handleDismiss,
-            {
-                once: true
-            }
+    );
+const scratchWrapper =
+    document.getElementById(
+        "scratchWrapper"
+    );
+const actions =
+    document.getElementById(
+        "actions"
+    );
+const giftMessage =
+    document.getElementById(
+        "giftMessage"
+    );
+let isDrawing =
+    false;
+let revealed =
+    false;
+let scratchReady =
+    false;
+let lastX =
+    0;
+let lastY =
+    0;
+let scratchedPoints =
+    0;
+/* =====================================================
+   تجهيز طبقة الخدش
+===================================================== */
+function prepareScratch(){
+    const rect =
+        scratchWrapper.getBoundingClientRect();
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
         );
-        /* =====================================================
-           Scratch
-        ===================================================== */
-        const canvas =
-            document.getElementById(
-                "scratchCanvas"
-            );
-        const ctx =
-            canvas.getContext(
-                "2d",
-                {
-                    willReadFrequently: true
-                }
-            );
-        const scratchWrapper =
-            document.getElementById(
-                "scratchWrapper"
-            );
-        const actions =
-            document.getElementById(
-                "actions"
-            );
-        const giftMessage =
-            document.getElementById(
-                "giftMessage"
-            );
-        let isDrawing =
-            false;
-        let revealed =
-            false;
-        let lastX = 0;
-        let lastY = 0;
-        let scratchedPoints =
+    /*
+     * تجهيز حجم الـCanvas أولًا
+     */
+    canvas.width =
+        Math.round(
+            rect.width*dpr
+        );
+    canvas.height =
+        Math.round(
+            rect.height*dpr
+        );
+    canvas.style.width =
+        `${rect.width}px`;
+    canvas.style.height =
+        `${rect.height}px`;
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+    ctx.globalCompositeOperation =
+        "source-over";
+    ctx.globalAlpha =
+        1;
+    /*
+     * طبقة الخدش
+     */
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            rect.width,
+            rect.height
+        );
+    gradient.addColorStop(
+        0,
+        "#96979d"
+    );
+    gradient.addColorStop(
+        .25,
+        "#72737a"
+    );
+    gradient.addColorStop(
+        .5,
+        "#87888f"
+    );
+    gradient.addColorStop(
+        .75,
+        "#65666d"
+    );
+    gradient.addColorStop(
+        1,
+        "#484950"
+    );
+    ctx.fillStyle =
+        gradient;
+    ctx.fillRect(
+        0,
+        0,
+        rect.width,
+        rect.height
+    );
+    /*
+     * الخطوط
+     */
+    ctx.globalAlpha =
+        .13;
+    for(
+        let i=-rect.height;
+        i<rect.width;
+        i+=16
+    ){
+        ctx.beginPath();
+        ctx.moveTo(
+            i,
+            0
+        );
+        ctx.lineTo(
+            i+rect.height,
+            rect.height
+        );
+        ctx.lineWidth =
+            1;
+        ctx.strokeStyle =
+            "#ffffff";
+        ctx.stroke();
+    }
+    /*
+     * نقاط صغيرة
+     */
+    ctx.globalAlpha =
+        .08;
+    for(
+        let i=0;
+        i<350;
+        i++
+    ){
+        const x =
+            Math.random()*
+            rect.width;
+        const y =
+            Math.random()*
+            rect.height;
+        ctx.beginPath();
+        ctx.arc(
+            x,
+            y,
+            Math.random()*2,
+            0,
+            Math.PI*2
+        );
+        ctx.fillStyle =
+            "#ffffff";
+        ctx.fill();
+    }
+    ctx.globalAlpha =
+        1;
+    /*
+     * أهم نقطة:
+     * نتأكد أن الطبقة موجودة
+     * فعلًا قبل تفعيل اللمس.
+     */
+    scratchReady =
+        true;
+    scratchWrapper.classList.add(
+        "ready"
+    );
+}
+/* =====================================================
+   بدء الشاشة
+===================================================== */
+function startScratch(){
+    /*
+     * لا نفعّل الـScratch مباشرة.
+     * نجهز الصورة والطبقة أولًا.
+     */
+    scratchReady =
+        false;
+    scratchWrapper.classList.remove(
+        "ready"
+    );
+    /*
+     * ننتظر حتى تكون الصورة
+     * والـlayout جاهزين.
+     */
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            prepareScratch();
+        });
+    });
+}
+/* =====================================================
+   مكان الإصبع
+===================================================== */
+function getPosition(event){
+    const rect =
+        canvas.getBoundingClientRect();
+    return {
+        x:
+            event.clientX -
+            rect.left,
+        y:
+            event.clientY -
+            rect.top
+    };
+}
+/* =====================================================
+   المسح
+===================================================== */
+function scratch(event){
+    /*
+     * حماية إضافية:
+     * لا يمكن المسح قبل التجهيز.
+     */
+    if(
+        !scratchReady ||
+        revealed
+    ){
+        return;
+    }
+    event.preventDefault();
+    const {
+        x,
+        y
+    } =
+        getPosition(event);
+    ctx.globalCompositeOperation =
+        "destination-out";
+    ctx.globalAlpha =
+        1;
+    ctx.lineCap =
+        "round";
+    ctx.lineJoin =
+        "round";
+    const brushSize =
+        window.innerWidth < 600
+            ? 58
+            : 66;
+    ctx.lineWidth =
+        brushSize;
+    /*
+     * أول نقطة
+     */
+    if(
+        lastX===0 &&
+        lastY===0
+    ){
+        lastX =
+            x;
+        lastY =
+            y;
+    }
+    /*
+     * مسار ناعم
+     */
+    ctx.beginPath();
+    ctx.moveTo(
+        lastX,
+        lastY
+    );
+    ctx.lineTo(
+        x,
+        y
+    );
+    ctx.stroke();
+    /*
+     * دائرة نهاية المسار
+     */
+    ctx.beginPath();
+    ctx.arc(
+        x,
+        y,
+        brushSize/2,
+        0,
+        Math.PI*2
+    );
+    ctx.fill();
+    lastX =
+        x;
+    lastY =
+        y;
+    scratchedPoints++;
+    if(
+        scratchedPoints%8===0
+    ){
+        checkReveal();
+    }
+}
+/* =====================================================
+   نهاية اللمس
+===================================================== */
+function stopScratch(){
+    if(!scratchReady)
+        return;
+    isDrawing =
+        false;
+    lastX =
+        0;
+    lastY =
+        0;
+    checkReveal();
+}
+/* =====================================================
+   فحص نسبة المسح
+===================================================== */
+function checkReveal(){
+    if(
+        !scratchReady ||
+        revealed
+    ){
+        return;
+    }
+    const sampleSize =
+        60;
+    const tempCanvas =
+        document.createElement(
+            "canvas"
+        );
+    tempCanvas.width =
+        sampleSize;
+    tempCanvas.height =
+        sampleSize;
+    const tempCtx =
+        tempCanvas.getContext(
+            "2d"
+        );
+    tempCtx.drawImage(
+        canvas,
+        0,
+        0,
+        sampleSize,
+        sampleSize
+    );
+    const pixels =
+        tempCtx.getImageData(
+            0,
+            0,
+            sampleSize,
+            sampleSize
+        ).data;
+    let transparent =
+        0;
+    let total =
+        0;
+    for(
+        let i=3;
+        i<pixels.length;
+        i+=4
+    ){
+        total++;
+        if(
+            pixels[i]<45
+        ){
+            transparent++;
+        }
+    }
+    const percentage =
+        transparent /
+        total;
+    if(
+        percentage>=.84
+    ){
+        revealGift();
+    }
+}
+/* =====================================================
+   كشف الهدية
+===================================================== */
+function revealGift(){
+    if(
+        revealed ||
+        !scratchReady
+    ){
+        return;
+    }
+    revealed =
+        true;
+    canvas.style.transition =
+        "opacity .55s ease";
+    canvas.style.opacity =
+        "0";
+    scratchWrapper.classList.add(
+        "revealed"
+    );
+    setTimeout(() => {
+        actions.classList.add(
+            "show"
+        );
+        giftMessage.classList.add(
+            "show"
+        );
+    },350);
+}
+/* =====================================================
+   أحداث اللمس
+===================================================== */
+canvas.addEventListener(
+    "pointerdown",
+    event => {
+        /*
+         * حتى لو وصل الحدث قبل الجاهزية
+         * يتم تجاهله بالكامل.
+         */
+        if(
+            !scratchReady ||
+            revealed
+        ){
+            return;
+        }
+        isDrawing =
+            true;
+        canvas.setPointerCapture(
+            event.pointerId
+        );
+        lastX =
             0;
-        /* =====================================================
-           بدء المسح
-        ===================================================== */
-        function startScratch() {
-            resizeCanvas();
+        lastY =
+            0;
+        scratch(event);
+    }
+);
+canvas.addEventListener(
+    "pointermove",
+    event => {
+        if(
+            !isDrawing ||
+            !scratchReady ||
+            revealed
+        ){
+            return;
         }
-        /* =====================================================
-           إنشاء طبقة الخدش
-        ===================================================== */
-        function resizeCanvas() {
-            const rect =
-                scratchWrapper.getBoundingClientRect();
-            const dpr =
-                Math.min(
-                    window.devicePixelRatio || 1,
-                    2
-                );
-            canvas.width =
-                Math.round(
-                    rect.width * dpr
-                );
-            canvas.height =
-                Math.round(
-                    rect.height * dpr
-                );
-            canvas.style.width =
-                `${rect.width}px`;
-            canvas.style.height =
-                `${rect.height}px`;
-            ctx.setTransform(
-                dpr,
-                0,
-                0,
-                dpr,
-                0,
-                0
-            );
-            ctx.globalCompositeOperation =
-                "source-over";
-            /*
-             * طبقة خدش رمادية
-             */
-            const gradient =
-                ctx.createLinearGradient(
-                    0,
-                    0,
-                    rect.width,
-                    rect.height
-                );
-            gradient.addColorStop(
-                0,
-                "#96979d"
-            );
-            gradient.addColorStop(
-                0.25,
-                "#72737a"
-            );
-            gradient.addColorStop(
-                0.5,
-                "#87888f"
-            );
-            gradient.addColorStop(
-                0.75,
-                "#65666d"
-            );
-            gradient.addColorStop(
-                1,
-                "#484950"
-            );
-            ctx.fillStyle =
-                gradient;
-            ctx.fillRect(
-                0,
-                0,
-                rect.width,
-                rect.height
-            );
-            /*
-             * ملمس الطبقة
-             */
-            ctx.globalAlpha =
-                0.13;
-            for (
-                let i = -rect.height;
-                i < rect.width;
-                i += 16
-            ) {
-                ctx.beginPath();
-                ctx.moveTo(
-                    i,
-                    0
-                );
-                ctx.lineTo(
-                    i + rect.height,
-                    rect.height
-                );
-                ctx.lineWidth =
-                    1;
-                ctx.strokeStyle =
-                    "#ffffff";
-                ctx.stroke();
-            }
-            /*
-             * نقاط صغيرة عشوائية
-             */
-            ctx.globalAlpha =
-                0.08;
-            for (
-                let i = 0;
-                i < 350;
-                i++
-            ) {
-                const x =
-                    Math.random() *
-                    rect.width;
-                const y =
-                    Math.random() *
-                    rect.height;
-                ctx.beginPath();
-                ctx.arc(
-                    x,
-                    y,
-                    Math.random() * 2,
-                    0,
-                    Math.PI * 2
-                );
-                ctx.fillStyle =
-                    "#ffffff";
-                ctx.fill();
-            }
-            ctx.globalAlpha =
-                1;
-        }
-        /* =====================================================
-           تحديد مكان الإصبع
-        ===================================================== */
-        function getPosition(event) {
-            const rect =
-                canvas.getBoundingClientRect();
-            return {
-                x:
-                    event.clientX -
-                    rect.left,
-                y:
-                    event.clientY -
-                    rect.top
-            };
-        }
-        /* =====================================================
-           رسم المسح
-        ===================================================== */
-        function scratch(event) {
-            if (revealed)
-                return;
-            event.preventDefault();
-            const {
-                x,
-                y
-            } =
-                getPosition(event);
-            ctx.globalCompositeOperation =
-                "destination-out";
-            ctx.lineCap =
-                "round";
-            ctx.lineJoin =
-                "round";
-            /*
-             * فرشاة مناسبة للمسح بالإصبع
-             */
-            const brushSize =
-                window.innerWidth < 600
-                    ? 58
-                    : 66;
-            ctx.lineWidth =
-                brushSize;
-            /*
-             * أول نقطة
-             */
-            if (
-                lastX === 0 &&
-                lastY === 0
-            ) {
-                lastX =
-                    x;
-                lastY =
-                    y;
-            }
-            /*
-             * المسح يكون ناعمًا
-             * حتى مع حركة سريعة للإصبع
-             */
-            ctx.beginPath();
-            ctx.moveTo(
-                lastX,
-                lastY
-            );
-            ctx.lineTo(
-                x,
-                y
-            );
-            ctx.stroke();
-            /*
-             * دائرة في نهاية المسار
-             */
-            ctx.beginPath();
-            ctx.arc(
-                x,
-                y,
-                brushSize / 2,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
-            lastX =
-                x;
-            lastY =
-                y;
-            scratchedPoints++;
-            /*
-             * نفحص نسبة المسح
-             * بشكل دوري
-             */
-            if (
-                scratchedPoints % 8 === 0
-            ) {
-                checkReveal();
-            }
-        }
-        /* =====================================================
-           انتهاء اللمس
-        ===================================================== */
-        function stopScratch() {
-            isDrawing =
-                false;
-            lastX =
-                0;
-            lastY =
-                0;
-            checkReveal();
-        }
-        /* =====================================================
-           حساب نسبة المسح
-        ===================================================== */
-        function checkReveal() {
-            if (revealed)
-                return;
-            const sampleSize =
-                60;
-            const tempCanvas =
-                document.createElement(
-                    "canvas"
-                );
-            tempCanvas.width =
-                sampleSize;
-            tempCanvas.height =
-                sampleSize;
-            const tempCtx =
-                tempCanvas.getContext(
-                    "2d"
-                );
-            tempCtx.drawImage(
-                canvas,
-                0,
-                0,
-                sampleSize,
-                sampleSize
-            );
-            const pixels =
-                tempCtx.getImageData(
-                    0,
-                    0,
-                    sampleSize,
-                    sampleSize
-                ).data;
-            let transparent =
-                0;
-            let total =
-                0;
-            for (
-                let i = 3;
-                i < pixels.length;
-                i += 4
-            ) {
-                total++;
-                if (
-                    pixels[i] < 45
-                ) {
-                    transparent++;
-                }
-            }
-            const percentage =
-                transparent /
-                total;
-            /*
-             * يحتاج المستخدم لمسح
-             * أغلب الصورة فعلًا.
-             */
-            if (
-                percentage >= 0.84
-            ) {
-                revealGift();
-            }
-        }
-        /* =====================================================
-           إظهار الصورة
-        ===================================================== */
-        function revealGift() {
-            if (revealed)
-                return;
-            revealed =
-                true;
-            canvas.style.transition =
-                "opacity 0.55s ease";
-            canvas.style.opacity =
-                "0";
-            scratchWrapper.classList.add(
-                "revealed"
-            );
-            setTimeout(() => {
-                actions.classList.add(
-                    "show"
-                );
-                giftMessage.classList.add(
-                    "show"
-                );
-            }, 350);
-        }
-        /* =====================================================
-           أحداث المسح
-        ===================================================== */
-        canvas.addEventListener(
-            "pointerdown",
-            event => {
-                if (revealed)
-                    return;
-                isDrawing =
-                    true;
-                canvas.setPointerCapture(
-                    event.pointerId
-                );
-                /*
-                 * إعادة السماح بالمسح
-                 * حتى لا يتأثر بالسحب السريع
-                 */
-                lastX =
-                    0;
-                lastY =
-                    0;
-                scratch(event);
-            }
-        );
-        canvas.addEventListener(
-            "pointermove",
-            event => {
-                if (!isDrawing)
-                    return;
-                scratch(event);
-            }
-        );
-        canvas.addEventListener(
-            "pointerup",
-            stopScratch
-        );
-        canvas.addEventListener(
-            "pointercancel",
-            stopScratch
-        );
-        /* =====================================================
-           حفظ الصورة
-        ===================================================== */
-        const saveImage =
+        scratch(event);
+    }
+);
+canvas.addEventListener(
+    "pointerup",
+    stopScratch
+);
+canvas.addEventListener(
+    "pointercancel",
+    stopScratch
+);
+/* =====================================================
+   حفظ الصورة
+===================================================== */
+const saveImage =
+    document.getElementById(
+        "saveImage"
+    );
+saveImage.addEventListener(
+    "click",
+    async () => {
+        if(!revealed)
+            return;
+        const img =
             document.getElementById(
-                "saveImage"
+                "giftImage"
             );
-        saveImage.addEventListener(
-            "click",
-            async () => {
-                if (!revealed)
-                    return;
-                const img =
-                    document.getElementById(
-                        "giftImage"
-                    );
-                try {
-                    const response =
-                        await fetch(
-                            img.src
-                        );
-                    const blob =
-                        await response.blob();
-                    const url =
-                        URL.createObjectURL(
-                            blob
-                        );
-                    const link =
-                        document.createElement(
-                            "a"
-                        );
-                    link.href =
-                        url;
-                    link.download =
-                        "my-gift.png";
-                    document.body.appendChild(
-                        link
-                    );
-                    link.click();
-                    link.remove();
-                    setTimeout(() => {
-                        URL.revokeObjectURL(
-                            url
-                        );
-                    }, 1000);
-                } catch (error) {
-                    window.open(
-                        img.src,
-                        "_blank"
-                    );
-                }
-            }
+        try{
+            const response =
+                await fetch(
+                    img.src
+                );
+            const blob =
+                await response.blob();
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+            const link =
+                document.createElement(
+                    "a"
+                );
+            link.href =
+                url;
+            link.download =
+                "my-gift.png";
+            document.body.appendChild(
+                link
+            );
+            link.click();
+            link.remove();
+            setTimeout(() => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },1000);
+        }catch(error){
+            window.open(
+                img.src,
+                "_blank"
+            );
+        }
+    }
+);
+/* =====================================================
+   فتح شاشة الهدية
+===================================================== */
+const handleDismiss =
+    () => {
+        intro.classList.add(
+            "hide"
         );
-    </script>
+        /*
+         * نبدأ تجهيز الـScratch
+         * فورًا أثناء الانتقال،
+         * وليس بعد اختفاء الشاشة بالكامل.
+         */
+        startScratch();
+        setTimeout(() => {
+            intro.style.display =
+                "none";
+        },800);
+    };
+intro.addEventListener(
+    "pointerdown",
+    handleDismiss,
+    {
+        once:true
+    }
+);
+</script>
 </body>
 </html>
