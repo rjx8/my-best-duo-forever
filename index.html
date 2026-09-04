@@ -1,1 +1,63 @@
-html
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .intro {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .intro img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="intro" id="intro"></div>
+
+    <script>
+        const intro = document.getElementById("intro");
+
+        const image = "IMG_7293.png";
+
+        const columns = Math.ceil(window.innerWidth / 120);
+        const rows = Math.ceil(window.innerHeight / 120);
+        const amount = columns * rows;
+
+        for (let i = 0; i < amount; i++) {
+            const img = document.createElement("img");
+            img.src = image;
+            intro.appendChild(img);
+        }
+
+        intro.addEventListener("click", () => {
+            intro.remove();
+        });
+    </script>
+
+</body>
+</html>
